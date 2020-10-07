@@ -23,7 +23,9 @@ app.prepare().then(async () => {
   }
 
   server.use("/public", express.static("public"));
-  server.all("*", async (r, s) => handler(r, s, r.url));
+  server.all("*", async (r, s) => {
+    handler(r, s, r.url);
+  });
 
   const listenServer = server.listen(Environment.PORT, (e) => {
     if (e) throw e;

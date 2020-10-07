@@ -56,10 +56,12 @@ export const ButtonPrimary = (props) => {
 
 export default class IndexPage extends React.Component {
   _handleUpload = async (e) => {
-    console.log(e.target.files[0]);
+    if (e.target.files) {
+      console.log(e.target.files[0]);
 
-    const response = await Upload.upload({ file: e.target.files[0] });
-    console.log(response);
+      const response = await Upload.upload({ file: e.target.files[0] });
+      console.log(response);
+    }
   };
 
   render() {
