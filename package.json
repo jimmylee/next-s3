@@ -1,0 +1,42 @@
+{
+  "name": "next-s3",
+  "description": "",
+  "author": "jimmylee",
+  "version": "1.0.0",
+  "license": "MIT",
+  "engines": {
+    "node": "14.7.0"
+  },
+  "scripts": {
+    "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 node . --unhandled-rejections=strict",
+    "start": "NODE_ENV=production node . --unhandled-rejections=strict",
+    "build": "NODE_ENV=production next build",
+    "scripts": "NODE_TLS_REJECT_UNAUTHORIZED=0 node ./scripts"
+  },
+  "repository": "jimmylee/next-s3",
+  "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.11.0",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/register": "^7.10.5",
+    "@babel/runtime": "^7.11.2",
+    "@emotion/babel-preset-css-prop": "^10.0.27",
+    "@emotion/cache": "11.0.0-next.12",
+    "@emotion/core": "^10.0.28",
+    "@emotion/css": "11.0.0-next.12",
+    "@emotion/react": "11.0.0-next.12",
+    "@emotion/server": "11.0.0-next.12",
+    "aws-sdk": "^2.768.0",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "body-parser": "^1.19.0",
+    "busboy": "^0.3.1",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "isomorphic-fetch": "^2.2.1",
+    "next": "^9.5.2",
+    "pg": "^8.3.3",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
+}
