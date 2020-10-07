@@ -14,7 +14,7 @@ const Bucket = new AWS.S3({
   apiVersion: "2006-03-01",
   accessKeyId: Environment.IAM_USER_KEY,
   secretAccessKey: Environment.IAM_USER_SECRET,
-  httpOptions: { timeout: 0, agent },
+  httpOptions: { timeout: 15 * 60 * 1000, agent },
 });
 
 const AMAZON_MINIMUM_PART_SIZE = 1024 * 1024 * 20;
