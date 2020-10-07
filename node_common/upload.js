@@ -1,6 +1,25 @@
+import * as Environment from "~/node_common/environment";
+import * as AWS from "aws-sdk";
+
 import B from "busboy";
 
+const Bucket = new AWS.S3({
+  accessKeyId: Environment.IAM_USER_KEY,
+  secretAccessKey: Environment.IAM_USER_SECRET,
+});
+
 const HIGH_WATER_MARK = 1024 * 1024 * 3;
+
+const uploadToAmazonS3 = (params) =>
+  new Promise((resolve, reject) => {
+    Bucket.upload(params, function(err, data) {
+      if (err) {
+        return reject(err);
+      }
+
+      return resolve(data);
+    });
+  });
 
 export const formMultipart = async (req, res) => {
   let data = null;
@@ -13,9 +32,16 @@ export const formMultipart = async (req, res) => {
       });
 
       form.on("file", async function(fieldname, stream, filename, encoding, mime) {
-        let push;
+        const params = {
+          Bucket: Environment.BUCKET_NAME,
+          Key: "test" + "-" + filename,
+          Body: stream,
+        };
+
         try {
           console.log("[upload] stream");
+          data = await uploadToAmazonS3(params);
+          console.log("[upload] finished");
         } catch (e) {
           return reject({
             decorator: "ERROR",
@@ -26,7 +52,7 @@ export const formMultipart = async (req, res) => {
 
         return resolve({
           decorator: "SUCCESS",
-          data: "",
+          data,
         });
       });
 
