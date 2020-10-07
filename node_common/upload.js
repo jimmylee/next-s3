@@ -3,23 +3,14 @@ import * as AWS from "aws-sdk";
 
 import B from "busboy";
 
+// NOTE(jim): Timeout must be set
 const Bucket = new AWS.S3({
   accessKeyId: Environment.IAM_USER_KEY,
   secretAccessKey: Environment.IAM_USER_SECRET,
+  httpOptions: { timeout: 15 * 60 * 1000, connectTimeout: 15 * 60 * 1000 },
 });
 
-const HIGH_WATER_MARK = 1024 * 1024 * 3;
-
-const uploadToAmazonS3 = (params) =>
-  new Promise((resolve, reject) => {
-    Bucket.upload(params, function(err, data) {
-      if (err) {
-        return reject(err);
-      }
-
-      return resolve(data);
-    });
-  });
+const AMAZON_MINIMUM_PART_SIZE = 1024 * 1024 * 20;
 
 export const formMultipart = async (req, res) => {
   let data = null;
@@ -28,7 +19,7 @@ export const formMultipart = async (req, res) => {
     new Promise(async (resolve, reject) => {
       let form = new B({
         headers: req.headers,
-        highWaterMark: HIGH_WATER_MARK,
+        highWaterMark: AMAZON_MINIMUM_PART_SIZE,
       });
 
       form.on("file", async function(fieldname, stream, filename, encoding, mime) {
@@ -40,7 +31,11 @@ export const formMultipart = async (req, res) => {
 
         try {
           console.log("[upload] stream");
-          data = await uploadToAmazonS3(params);
+          data = await Bucket.upload(params, { partSize: AMAZON_MINIMUM_PART_SIZE, queueSize: 4 })
+            .on("httpUploadProgress", (progress) => {
+              console.log("[ progress ]", progress.loaded);
+            })
+            .promise();
           console.log("[upload] finished");
         } catch (e) {
           return reject({
