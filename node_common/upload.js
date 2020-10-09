@@ -27,6 +27,7 @@ export const formMultipart = async (req, res) => {
       let form = new B({
         headers: req.headers,
         highWaterMark: AMAZON_MINIMUM_PART_SIZE,
+        limit: { files: 1, fileSize: 4 * 1024 * 1024 * 1024 },
       });
 
       form.on("file", async function(fieldname, stream, filename, encoding, mime) {
@@ -39,12 +40,13 @@ export const formMultipart = async (req, res) => {
 
         try {
           console.log("[upload] stream");
-          data = await Bucket.upload(params, { partSize: AMAZON_MINIMUM_PART_SIZE, queueSize: 4 })
+          data = await Bucket.upload(params, { partSize: AMAZON_MINIMUM_PART_SIZE, queueSize: 1 })
             .on("httpUploadProgress", (progress) => {
               console.log("[ progress ]", progress.loaded);
             })
             .on("error", (error) => {
               console.log(error);
+              req.unpipe();
 
               return reject({
                 decorator: "AWS_ERROR",
@@ -55,6 +57,7 @@ export const formMultipart = async (req, res) => {
             .promise();
           console.log("[upload] finished");
         } catch (e) {
+          req.unpipe();
           return reject({
             decorator: "ERROR",
             error: true,
@@ -69,6 +72,8 @@ export const formMultipart = async (req, res) => {
       });
 
       form.on("error", (e) => {
+        req.unpipe();
+
         return reject({
           decorator: "ERROR",
           error: true,

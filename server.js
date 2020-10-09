@@ -4,6 +4,8 @@ import express from "express";
 import next from "next";
 import compression from "compression";
 import cors from "cors";
+import morgan from "morgan";
+import bodyParser from "body-parser";
 
 const app = next({
   dev: !Environment.IS_PRODUCTION,
@@ -17,11 +19,7 @@ app.prepare().then(async () => {
   const server = express();
 
   server.use(cors());
-
-  if (Environment.IS_PRODUCTION) {
-    server.use(compression());
-  }
-
+  server.use(morgan(":method :url :status :res[content-length] - :response-time ms"));
   server.use("/public", express.static("public"));
   server.all("*", async (r, s) => {
     handler(r, s, r.url);
