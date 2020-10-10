@@ -31,5 +31,5 @@ app.prepare().then(async () => {
     console.log(`[ slate ] client: http://localhost:${Environment.PORT}`);
   });
 
-  listenServer.setTimeout(15 * 60 * 1000);
+  listenServer.headersTimeout = 0;
 });

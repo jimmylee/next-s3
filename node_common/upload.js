@@ -27,14 +27,13 @@ export const formMultipart = async (req, res) => {
       let form = new B({
         headers: req.headers,
         highWaterMark: AMAZON_MINIMUM_PART_SIZE,
-        limit: { files: 1, fileSize: 4 * 1024 * 1024 * 1024 },
       });
 
       form.on("file", async function(fieldname, stream, filename, encoding, mime) {
         const params = {
           Bucket: Environment.BUCKET_NAME,
           Key: "test" + "-" + filename,
-          Expires: 360,
+          Expires: 3600,
           Body: stream,
         };
 
